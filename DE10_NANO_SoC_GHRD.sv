@@ -222,20 +222,20 @@ reg   prev_pressed = 0;
 
 parameter MEM_STACK_BASE = 16'h4000;
 
-reg [47:0]  cur_instruction = 47'd0;
-reg [2:0]  instr_reg_1 = 3'd0;
-reg [2:0]  instr_reg_2 = 3'd0;
+// Registers, visible to users
 reg [15:0] PC = 16'd0;
 reg [15:0] FR = 16'd0;
 reg [15:0] SP  = MEM_STACK_BASE;
-reg [15:0] BP = 0;
-
 reg [15:0] R00 = 0;
 reg [15:0] R01 = 0;
 reg [15:0] R02 = 0;
 reg [15:0] R03 = 0;
 
 // CPU variables
+reg [47:0]  cur_instruction = 47'd0;
+reg [2:0]  instr_reg_1 = 3'd0;
+reg [2:0]  instr_reg_2 = 3'd0;
+
 reg [31:0] data = 32'd0;
 reg [15:0] tmp_address = 16'd0;
 reg [15:0] tmp_word = 16'd0;
