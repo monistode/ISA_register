@@ -232,7 +232,7 @@ reg [15:0] R02 = 0;
 reg [15:0] R03 = 0;
 
 // CPU variables
-reg [47:0]  cur_instruction = 47'd0;
+reg [39:0]  cur_instruction = 39'd0;
 reg [2:0]  instr_reg_1 = 3'd0;
 reg [2:0]  instr_reg_2 = 3'd0;
 
@@ -417,28 +417,21 @@ if (
         read_req <= 1;
     end else  if (cur_cpu_state == CPU_STATE_INSTR_DECODE) begin
         case (PC[1:0])
-            2'b00: cur_instruction[47:32] <= data[15:0];
-            2'b01: cur_instruction[47:24] <= data[23:0];
-            2'b10: cur_instruction[47:16] <= data[31:0];
-            2'b11: begin
-                cur_instruction[39: 8] <= data[31:0];
-                byte_enable <= 4'b1111;
-                address <= {PC[15:2], 2'b00} + 16'd8;
-                read_req <= 1;
-            end
+            2'b00: cur_instruction[39:32] <= data[7:0];
+            2'b01: cur_instruction[39:24] <= data[15:0];
+            2'b10: cur_instruction[39:16] <= data[23:0];
+            2'b11: cur_instruction[39: 8] <= data[31:0];
             default: begin
             end
         endcase
-    end else if (cur_cpu_state == CPU_STATE_INSTR_DECODE_1) begin
-        if (PC[1:0] == 2'b11) cur_instruction[47:40] <= data[7:0];
     end else begin
-        case (cur_instruction[7:0]) 
+        case (cur_instruction[5:0]) 
             // That's a NOP )
             default: begin
             end
 
             // HALT
-            8'b0: begin
+            6'b0: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_WRITEBACK_1: begin
                         is_halted <= '1;
@@ -449,13 +442,192 @@ if (
                     end
                 endcase
             end
+				
+				// LOAD %REG1, [%REG2]
+            6'b000001: begin
+                case (cur_cpu_state)
+                    CPU_STATE_INSTR_IMM_FETCH: begin
+                        instr_reg_1 <= cur_instruction[8:6];
+                        instr_reg_2 <= cur_instruction[11:9];
+                        PC <= PC + 16'd2;
+                    end
+
+                    CPU_STATE_INSTR_IMM_FETCH_1: begin
+                        case (instr_reg_2)
+                            3'b000: begin
+                                address <= {R00[15:2], 2'b00};
+                                tmp_address <= R00;
+                            end
+                            3'b001: begin
+                                address <= {R01[15:2], 2'b00};
+                                tmp_address <= R01;
+                            end
+                            3'b010: begin
+                                address <= {R02[15:2], 2'b00};
+                                tmp_address <= R02;
+                            end
+                            3'b011: begin
+                                address <= {R03[15:2], 2'b00};
+                                tmp_address <= R03;
+                            end
+
+                            3'b100: begin
+                                address <= {SP[15:2], 2'b00};
+                                tmp_address <= SP;
+                            end
+
+                            3'b101: begin
+                                address <= {BP[15:2], 2'b00};
+                                tmp_address <= BP;
+                            end
+
+                            default: begin
+                            end
+                        endcase
+
+                        read_req <= 1;
+                        byte_enable <= 4'b1111;
+                    end
+
+                    CPU_STATE_INSTR_SECOND_IMM_FETCH: begin
+                        case (tmp_address[1:0])
+                            2'b00: cur_imm <= data[15:0];
+                            2'b01: cur_imm <= data[23:8];
+                            2'b10: cur_imm <= data[31:16];
+                            2'b11: begin
+                                cur_imm[7:0] <= data[31:24];
+                                address <= {tmp_address[15:2], 2'b00} + 16'd4;
+                                read_req <= 1;
+                                byte_enable <= 4'b1111;
+                            end
+
+                            default: begin
+                            end
+                        endcase
+                    end
+
+                    CPU_STATE_INSTR_SECOND_IMM_FETCH_1: begin
+                        if (tmp_address[1:0] == 2'b11) cur_imm[15:8] <= data[7:0];
+                    end
+
+                    CPU_STATE_INSTR_OPERAND_FETCH: begin
+                        case (instr_reg_1)
+                            3'b000: R00 <= cur_imm;
+                            3'b001: R01 <= cur_imm;
+                            3'b010: R02 <= cur_imm;
+                            3'b011: R03 <= cur_imm;
+                            3'b100: SP <= {cur_imm[15:2], 2'b00};
+                            3'b101: BP <= {cur_imm[15:2], 2'b00};
+                            3'b111: FR <= cur_imm;
+
+                            default: begin
+                            end
+                        endcase
+                    end
+
+                    default: begin
+                    end
+                endcase
+            end
+            
+            // STORE [%REG1], %REG2
+            6'b000010: begin
+                case (cur_cpu_state)
+                    CPU_STATE_INSTR_IMM_FETCH: begin
+                        instr_reg_1 <= cur_instruction[8:6];
+                        instr_reg_2 <= cur_instruction[11:9];
+                        PC <= PC + 16'd2;
+                    end
+
+                    CPU_STATE_INSTR_IMM_FETCH_1: begin
+                        case (instr_reg_1)
+                            3'b000: tmp_address <= R00;
+                            3'b001: tmp_address <= R01;
+                            3'b010: tmp_address <= R02;
+                            3'b011: tmp_address <= R03;
+                            3'b100: tmp_address <= SP;
+                            3'b101: tmp_address <= BP;
+
+                            default: begin
+                            end
+                        endcase
+
+                        case (instr_reg_2)
+                            3'b000: tmp_word <= R00;
+                            3'b001: tmp_word <= R01;
+                            3'b010: tmp_word <= R02;
+                            3'b011: tmp_word <= R03;
+                            3'b100: tmp_word <= SP;
+                            3'b101: tmp_word <= BP;
+                            3'b111: tmp_word <= FR;
+
+                            default: begin
+                            end
+                        endcase
+                    end
+
+                    CPU_STATE_INSTR_SECOND_IMM_FETCH: begin
+                        address <= {tmp_address[15:2], 2'b00};
+
+                        case (tmp_address[1:0])
+                            2'b00: begin
+                                write_data <= {2{tmp_word}};
+                                byte_enable <= 4'b0011;
+                            end
+
+                            2'b10: begin
+                                write_data <= {2{tmp_word}};
+                                byte_enable <= 4'b1100;
+                            end
+
+                            2'b01: begin
+                                write_data <= {4{tmp_word[7:0]}};
+                                byte_enable <= 4'b0010;
+                            end
+
+                            2'b11: begin
+                                write_data <= {4{tmp_word[7:0]}};
+                                byte_enable <= 4'b1000;
+                            end
+                            default: begin
+                            end
+                        endcase
+
+                        write_req <= 1;
+                    end
+
+                    CPU_STATE_INSTR_SECOND_IMM_FETCH_1: begin
+                        case (tmp_address[1:0])
+                            2'b01: begin
+                                address <= {tmp_address[15:2], 2'b00};
+                                write_data <= {4{tmp_word[15:8]}};
+                                byte_enable <= 4'b0100;
+                                write_req <= 1;
+                            end
+
+                            2'b11: begin
+                                address <= {tmp_address[15:2], 2'b00} + 16'd4;
+                                write_data <= {4{tmp_word[15:8]}};
+                                byte_enable <= 4'b0001;
+                                write_req <= 1;
+                            end
+
+                            default: begin
+                            end
+                        endcase
+                    end
+
+                    default: begin
+                    end
+                endcase
+            end
 
             // MOV %REG, $IMM
-            8'b10000000: begin
+            6'b000110: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
                         cur_imm <= cur_instruction[31:16];
-                        instr_reg_1 <= cur_instruction[10:8];
+                        instr_reg_1 <= cur_instruction[8:6];
                         PC <= PC + 16'd4;
                     end
 
@@ -479,11 +651,11 @@ if (
             end
 
             // MOV %REG1, %REG2
-            8'b01100000: begin
+            6'b0000101: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[10:8];
-                        instr_reg_2 <= cur_instruction[13:11];
+                        instr_reg_1 <= cur_instruction[8:6];
+                        instr_reg_2 <= cur_instruction[11:9];
                         PC <= PC + 16'd2;
                     end
 
@@ -521,6 +693,7 @@ if (
                     end
                 endcase
             end
+            // END
 
             // MOV %REG1, [%REG2]
             8'b01100001: begin
