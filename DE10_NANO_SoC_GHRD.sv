@@ -335,7 +335,6 @@ if (
     ~uart_write_req &  ~uart_read_req &// Can't do UART either (
     (~SW[3] | (prev_pressed & ~debounced_keys[1] & cycle_done) | ~cycle_done) // Button checker
     ) begin
-    PC <= 3;
     cycle_done <= cur_cpu_state == CPU_STATE_INSTR_WRITEBACK_1;
 
     case (cur_cpu_state)
@@ -401,12 +400,10 @@ if (
     endcase
 
     if (cur_cpu_state == CPU_STATE_INSTR_FETCH) begin
-        PC <= 4;
         byte_enable <= 4'b1111;
         address <= {PC[15:2], 2'b00};
         read_req <= 1;
     end else if (cur_cpu_state == CPU_STATE_INSTR_FETCH_1) begin
-        PC <= 5;
         case (PC[1:0])
             2'b00: cur_instruction[31:0] <= data[31:0];
             2'b01: cur_instruction[23:0] <= data[31:8];
