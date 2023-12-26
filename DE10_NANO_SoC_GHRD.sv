@@ -428,6 +428,14 @@ if (
         case (cur_instruction[5:0]) 
             // That's a NOP )
             default: begin
+                case (cur_cpu_state)
+                    CPU_STATE_INSTR_WRITEBACK_1: begin
+                        PC <= PC + 16'd1;
+                    end
+
+                    default: begin
+                    end
+                endcase
             end
 
             // HALT
@@ -443,7 +451,7 @@ if (
                 endcase
             end
 				
-				// LOAD %REG1, [%REG2]
+            // LOAD %REG1, [%REG2]
             6'b000001: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
