@@ -425,7 +425,8 @@ if (
             end
         endcase
     end else begin
-        case (cur_instruction[5:0]) 
+        case (cur_instruction[5:0])
+            // Radomyr's part
             // That's a NOP )
             default: begin
                 case (cur_cpu_state)
@@ -772,6 +773,14 @@ if (
                     end
                 endcase
             end
+            // Roman's part
+            
+            // Call ret cmp test (Radomyr)
+            
+            // Jumps (Roman)
+            
+            // IO (Radomyr)
+            
             // END
 
             // MOV %REG1, [%REG2]
