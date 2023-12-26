@@ -1068,6 +1068,71 @@ if (
             // Jumps (Roman)
             
             // IO (Radomyr)
+            // IN %REG, $IMM
+            6'b100000: begin
+                case (cur_cpu_state)
+                    CPU_STATE_INSTR_OPERAND_FETCH: begin
+                        instr_reg_1 <= cur_instruction[8:6];
+                        cur_imm <= cur_instruction[31:16];
+                        if (cur_instruction[31:16] == 0) uart_read_req <= 1;
+                        PC <= PC + 16'd4;
+                    end
+
+                    CPU_STATE_INSTR_OPERAND_FETCH_1: begin
+                        case (instr_reg_1)
+                            3'b000: R00 <= {8'b00, uart_data};
+                            3'b001: R01 <= {8'b00, uart_data};
+                            3'b010: R02 <= {8'b00, uart_data};
+                            3'b011: R03 <= {8'b00, uart_data};
+                            default: begin
+                            end
+                        endcase
+                    end
+
+                    default: begin
+                    end
+                endcase
+            end
+            
+            // OUT $IMM1, $IMM2
+            6'b100001: begin
+                case (cur_cpu_state)
+                    CPU_STATE_INSTR_IMM_FETCH: begin
+                        if (cur_instruction[21:6] == 0) begin
+                            uart_write_req <= 1;
+                            uart_wdata <= cur_instruction[29:22];
+                        end
+                        PC <= PC + 16'd5;
+                    end
+
+                    default: begin
+                    end
+                endcase
+            end
+            
+            // OUT $IMM, %REG
+            6'b100010: begin
+                case (cur_cpu_state)
+                    CPU_STATE_INSTR_IMM_FETCH: begin
+                        if (cur_instruction[21:6] == 0) begin
+                            uart_write_req <= 1;
+                            case (cur_instruction[24:22])
+                                3'b000: uart_wdata <= R00[7:0];
+                                3'b001: uart_wdata <= R01[7:0];
+                                3'b010: uart_wdata <= R02[7:0];
+                                3'b011: uart_wdata <= R03[7:0];
+
+                                default: begin
+                                end
+                            endcase
+                        end
+                        PC <= PC + 16'd4;
+                    end
+
+                    default: begin
+                    end
+                endcase
+            end
             
             // END
 
