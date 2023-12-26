@@ -701,6 +701,77 @@ if (
                     end
                 endcase
             end
+            
+            // PUSH %REG
+            6'b101000: begin
+                case (cur_cpu_state)
+                    CPU_STATE_INSTR_DECODE: begin
+                        instr_reg_1 <= cur_instruction[8:6];
+                        PC <= PC + 16'd2;
+                        SP <= SP - 16'd2;
+                    end
+
+                    CPU_STATE_INSTR_IMM_FETCH: begin
+                        case (instr_reg_1)
+                            3'b000: write_data <= {2{R00}};
+                            3'b001: write_data <= {2{R01}};
+                            3'b010: write_data <= {2{R02}};
+                            3'b011: write_data <= {2{R03}};
+                            3'b100: write_data <= {2{SP}};
+                            3'b101: write_data <= {2{BP}};
+                            3'b111: write_data <= {2{FR}};
+                            default: begin
+                            end
+                        endcase
+                        if (SP[1]) byte_enable <= 4'b1100;
+                        else byte_enable <= 4'b0011;
+                        address <= {SP[15:2], 2'b00};
+                        write_req <= '1;
+                    end
+
+                    default: begin
+                    end
+                endcase
+            end
+            
+            // POP %REG
+            6'b101001: begin
+                case (cur_cpu_state)
+                    CPU_STATE_INSTR_IMM_FETCH: begin
+                        instr_reg_1 <= cur_instruction[8:6];
+                        PC <= PC + 16'd2;
+                    end
+
+                    CPU_STATE_INSTR_IMM_FETCH_1: begin
+                        address <= {SP[15:2], 2'b00};
+                        read_req <= 1;
+                        byte_enable <= 4'b1111;
+                    end
+
+                    CPU_STATE_INSTR_SECOND_IMM_FETCH: begin
+                        if (SP[1]) cur_imm <= data[31:16];
+                        else cur_imm <= data[15:0];
+                        SP <= SP + 16'd2;
+                    end
+
+                    CPU_STATE_INSTR_SECOND_IMM_FETCH_1: begin
+                        case (instr_reg_1)
+                            3'b000: R00 <= cur_imm;
+                            3'b001: R01 <= cur_imm;
+                            3'b010: R02 <= cur_imm;
+                            3'b011: R03 <= cur_imm;
+                            3'b100: SP <= {cur_imm[15:2], 2'b00};
+                            3'b101: BP <= {cur_imm[15:2], 2'b00};
+                            3'b111: FR <= cur_imm;
+                            default: begin
+                            end
+                        endcase
+                    end
+
+                    default: begin
+                    end
+                endcase
+            end
             // END
 
             // MOV %REG1, [%REG2]
