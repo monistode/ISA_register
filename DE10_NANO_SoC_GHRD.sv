@@ -768,9 +768,9 @@ if (
             6'b000011: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
-								instr_reg_3 <= cur_instruction[14:12];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
+						instr_reg_3 <= cur_instruction[11:9];
                         PC <= PC + 16'd2;
                     end
 
@@ -780,11 +780,11 @@ if (
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
                             3'b011: cur_imm <= R03;
-									 default: begin
-								end
-								endcase
-								case (instr_reg_3)
-									 3'b000: tmp_word <= R00;
+                            default: begin
+							end
+						endcase
+						case (instr_reg_3)
+							3'b000: tmp_word <= R00;
                             3'b001: tmp_word<= R01;
                             3'b010: tmp_word <= R02;
                             3'b011: tmp_word <= R03;
@@ -841,9 +841,9 @@ if (
             6'b100100: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
-								instr_reg_3 <= cur_instruction[14:12];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
+						instr_reg_3 <= cur_instruction[11:9];
                         PC <= PC + 16'd2;
                     end
 
@@ -853,17 +853,16 @@ if (
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
                             3'b011: cur_imm <= R03;
-								case (instr_reg_3)
-								default: begin
-								end
-								endcase
-									 3'b000: tmp_word <= R00;
-                            3'b001: tmp_word<= R01;
+                            default: begin
+							end
+                        endcase
+						case (instr_reg_3)
+							default: begin
+							end
+							3'b000: tmp_word <= R00;
+                            3'b001: tmp_word <= R01;
                             3'b010: tmp_word <= R02;
                             3'b011: tmp_word <= R03;
-								
-                            default: begin
-                            end
                         endcase
                     end
 
@@ -914,9 +913,9 @@ if (
             6'b000100: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
-								instr_reg_3 <= cur_instruction[14:12];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
+						instr_reg_3 <= cur_instruction[11:9];
                         PC <= PC + 16'd2;
                     end
 
@@ -926,15 +925,14 @@ if (
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
                             3'b011: cur_imm <= R03;
-								case (instr_reg_3)
-									 default: begin
-								end
-								endcase
-									 3'b000: tmp_word <= R00;
+                            default: begin
+                            end
+                        endcase
+                        case (instr_reg_3)
+                            3'b000: tmp_word <= R00;
                             3'b001: tmp_word<= R01;
                             3'b010: tmp_word <= R02;
                             3'b011: tmp_word <= R03;
-								
                             default: begin
                             end
                         endcase
@@ -987,9 +985,9 @@ if (
             6'b001010: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
-								instr_reg_3 <= cur_instruction[14:12];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
+						instr_reg_3 <= cur_instruction[11:9];
                         PC <= PC + 16'd2;
                     end
 
@@ -999,15 +997,14 @@ if (
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
                             3'b011: cur_imm <= R03;
-								case (instr_reg_3)
-									 default: begin
-								end
-								endcase
-									 3'b000: tmp_word <= R00;
-                            3'b001: tmp_word<= R01;
+                            default: begin
+                            end
+                        endcase
+                        case (instr_reg_3)
+                            3'b000: tmp_word <= R00;
+                            3'b001: tmp_word <= R01;
                             3'b010: tmp_word <= R02;
                             3'b011: tmp_word <= R03;
-								
                             default: begin
                             end
                         endcase
@@ -1060,9 +1057,9 @@ if (
             6'b001010: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
-								instr_reg_3 <= cur_instruction[14:12];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
+						instr_reg_3 <= cur_instruction[11:9];
                         PC <= PC + 16'd2;
                     end
 
@@ -1072,15 +1069,14 @@ if (
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
                             3'b011: cur_imm <= R03;
-								case (instr_reg_3)
-									 default: begin
-								end
-								endcase
-									 3'b000: tmp_word <= R00;
+                            default: begin
+							end
+						endcase
+						case (instr_reg_3)
+							3'b000: tmp_word <= R00;
                             3'b001: tmp_word<= R01;
                             3'b010: tmp_word <= R02;
                             3'b011: tmp_word <= R03;
-								
                             default: begin
                             end
                         endcase
@@ -1133,9 +1129,9 @@ if (
             6'b001100: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:8];
-								instr_reg_3 <= cur_instruction[14:12]
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
+						instr_reg_3 <= cur_instruction[11:9]
                         PC <= PC + 16'd2;
                     end
 
@@ -1145,10 +1141,10 @@ if (
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
                             3'b011: cur_imm <= R03;
-								case (instr_reg_3)
-									 default: begin
-								end
-								endcase
+                            default: begin
+							end
+						endcase
+						case (instr_reg_3)
                             3'b000: tmp_word <= R00;
                             3'b001: tmp_word <= R01;
                             3'b010: tmp_word <= R02;
@@ -1197,9 +1193,9 @@ if (
             6'b001101: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:8];
-								instr_reg_3 <= cur_instruction[14:12]
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
+						instr_reg_3 <= cur_instruction[11:9]
                         PC <= PC + 16'd2;
                     end
 
@@ -1209,10 +1205,10 @@ if (
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
                             3'b011: cur_imm <= R03;
-								case (instr_reg_3)
-									 default: begin
-								end
-								endcase
+							default: begin
+							end
+						endcase
+                        case (instr_reg_3)
                             3'b000: tmp_word <= R00;
                             3'b001: tmp_word <= R01;
                             3'b010: tmp_word <= R02;
@@ -1261,9 +1257,9 @@ if (
             6'b001110: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:8];
-								instr_reg_3 <= cur_instruction[14:12]
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
+						instr_reg_3 <= cur_instruction[11:9]
                         PC <= PC + 16'd2;
                     end
 
@@ -1273,10 +1269,10 @@ if (
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
                             3'b011: cur_imm <= R03;
-								case (instr_reg_3)
-									 default: begin
-								end
-								endcase
+                            default: begin
+							end
+						endcase
+						case (instr_reg_3)
                             3'b000: tmp_word <= R00;
                             3'b001: tmp_word <= R01;
                             3'b010: tmp_word <= R02;
@@ -1325,8 +1321,8 @@ if (
             6'b001111: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:8];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
                         PC <= PC + 16'd2;
                     end
 
@@ -1384,9 +1380,9 @@ if (
             6'b010000: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:8];
-								instr_reg_3 <= cur_instruction[14:12]
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
+						instr_reg_3 <= cur_instruction[11:9]
                         PC <= PC + 16'd2;
                     end
 
@@ -1396,10 +1392,10 @@ if (
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
                             3'b011: cur_imm <= R03;
-								case (instr_reg_3)
-									 default: begin
-								end
-								endcase
+                            default: begin
+							end
+						endcase
+						case (instr_reg_3)
                             3'b000: tmp_word <= R00;
                             3'b001: tmp_word <= R01;
                             3'b010: tmp_word <= R02;
@@ -1448,9 +1444,9 @@ if (
             6'b010001: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:8];
-								instr_reg_3 <= cur_instruction[14:12]
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
+						instr_reg_3 <= cur_instruction[11:9]
                         PC <= PC + 16'd2;
                     end
 
@@ -1460,10 +1456,10 @@ if (
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
                             3'b011: cur_imm <= R03;
-								case (instr_reg_3)
-									 default: begin
-								end
-								endcase
+                            default: begin
+							end
+						endcase
+						case (instr_reg_3)
                             3'b000: tmp_word <= R00;
                             3'b001: tmp_word <= R01;
                             3'b010: tmp_word <= R02;
@@ -1815,7 +1811,7 @@ if (
             6'b011001: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        PC <= cur_instruction[25:6];
+                        PC <= {cur_instruction[9:8], cur_instruction[21:16], cur_instruction[1:0], cur_instruction[15:10]};
                     end
 
                     default: begin
@@ -1827,7 +1823,7 @@ if (
             6'b011010: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        case (cur_instruction[8:6])
+                        case ({cur_instruction[1:0], cur_instruction[15]})
                             3'b000: cur_imm <= R00;
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
@@ -1851,7 +1847,7 @@ if (
             6'b011010: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        if (FR[3]) PC <= cur_instruction[25:6];
+                        if (FR[3]) PC <= {cur_instruction[9:8], cur_instruction[21:16], cur_instruction[1:0], cur_instruction[15:10]};
                         else PC <= PC;
                     end
 
@@ -1864,7 +1860,7 @@ if (
             6'b011011: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        if (~FR[1]) PC <= cur_instruction[25:6];
+                        if (~FR[1]) PC <= {cur_instruction[9:8], cur_instruction[21:16], cur_instruction[1:0], cur_instruction[15:10]};
                         else PC <= PC;
                     end
 
@@ -1877,7 +1873,7 @@ if (
             6'b011100: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        if (~FR[1] & ~FR[2]) PC <= cur_instruction[25:6];
+                        if (~FR[1] & ~FR[2]) PC <= {cur_instruction[9:8], cur_instruction[21:16], cur_instruction[1:0], cur_instruction[15:10]};
                         else PC <= PC;
                     end
 
@@ -1890,7 +1886,7 @@ if (
             6'b011101: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        if (~FR[0]) PC <= cur_instruction[25:6];
+                        if (~FR[0]) PC <= {cur_instruction[9:8], cur_instruction[21:16], cur_instruction[1:0], cur_instruction[15:10]};
                         else PC <= PC;
                     end
 
@@ -1903,7 +1899,7 @@ if (
             6'b011110: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        if (FR[2] != FR[1]) PC <= cur_instruction[25:6];
+                        if (FR[2] != FR[1]) PC <= {cur_instruction[9:8], cur_instruction[21:16], cur_instruction[1:0], cur_instruction[15:10]};
                         else PC <= PC;
                     end
 
@@ -1916,7 +1912,7 @@ if (
             6'b011111: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        if (FR[0] | FR[1]) PC <= cur_instruction[25:6];
+                        if (FR[0] | FR[1]) PC <= {cur_instruction[9:8], cur_instruction[21:16], cur_instruction[1:0], cur_instruction[15:10]};
                         else PC <= PC;
                     end
 
