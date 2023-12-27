@@ -425,7 +425,7 @@ if (
             end
         endcase
     end else begin
-        case (cur_instruction[5:0])
+        case (cur_instruction[7:2])
             // Radomyr's part
             // That's a NOP )
             default: begin
@@ -456,8 +456,8 @@ if (
             6'b000001: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
                         PC <= PC + 16'd2;
                     end
 
@@ -499,7 +499,7 @@ if (
                             2'b01: cur_imm <= data[23:8];
                             2'b10: cur_imm <= data[31:16];
                             2'b11: begin
-                                cur_imm[7:0] <= data[31:24];
+                                cur_imm[15:8] <= data[31:24];
                                 address <= {tmp_address[15:2], 2'b00} + 16'd4;
                                 read_req <= 1;
                                 byte_enable <= 4'b1111;
@@ -511,7 +511,8 @@ if (
                     end
 
                     CPU_STATE_INSTR_SECOND_IMM_FETCH_1: begin
-                        if (tmp_address[1:0] == 2'b11) cur_imm[15:8] <= data[7:0];
+                        if (tmp_address[1:0] == 2'b11) cur_imm[7:0] <= data[7:0];
+                        else cur_imm <= {cur_imm[7:0], cur_imm[15:8]};
                     end
 
                     CPU_STATE_INSTR_OPERAND_FETCH: begin
@@ -537,8 +538,8 @@ if (
             6'b000010: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
                         PC <= PC + 16'd2;
                     end
 
@@ -555,12 +556,12 @@ if (
                         endcase
 
                         case (instr_reg_2)
-                            3'b000: tmp_word <= R00;
-                            3'b001: tmp_word <= R01;
-                            3'b010: tmp_word <= R02;
-                            3'b011: tmp_word <= R03;
-                            3'b100: tmp_word <= SP;
-                            3'b111: tmp_word <= FR;
+                            3'b000: tmp_word <= {R00[7:0], R00[15:8]};
+                            3'b001: tmp_word <= {R01[7:0], R01[15:8]};
+                            3'b010: tmp_word <= {R02[7:0], R02[15:8]};
+                            3'b011: tmp_word <= {R03[7:0], R03[15:8]};
+                            3'b100: tmp_word <= {SP[7:0], SP[15:8]};
+                            3'b111: tmp_word <= {FR[7:0], FR[15:8]};
 
                             default: begin
                             end
@@ -627,8 +628,8 @@ if (
             6'b000110: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        cur_imm <= cur_instruction[31:16];
-                        instr_reg_1 <= cur_instruction[8:6];
+                        cur_imm <= {cur_instruction[23:16], cur_instruction[31:24]};
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
                         PC <= PC + 16'd4;
                     end
 
@@ -654,8 +655,8 @@ if (
             6'b0000101: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
                         PC <= PC + 16'd2;
                     end
 
@@ -695,20 +696,20 @@ if (
             // PUSH %REG
             6'b101000: begin
                 case (cur_cpu_state)
-                    CPU_STATE_INSTR_DECODE: begin
-                        instr_reg_1 <= cur_instruction[8:6];
+                    CPU_STATE_INSTR_IMM_FETCH: begin
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
                         PC <= PC + 16'd2;
                         SP <= SP - 16'd2;
                     end
 
-                    CPU_STATE_INSTR_IMM_FETCH: begin
+                    CPU_STATE_INSTR_IMM_FETCH_1: begin
                         case (instr_reg_1)
-                            3'b000: write_data <= {2{R00}};
-                            3'b001: write_data <= {2{R01}};
-                            3'b010: write_data <= {2{R02}};
-                            3'b011: write_data <= {2{R03}};
-                            3'b100: write_data <= {2{SP}};
-                            3'b111: write_data <= {2{FR}};
+                            3'b000: write_data <= {2{R00[7:0], R00[15:8]}};
+                            3'b001: write_data <= {2{R01[7:0], R01[15:8]}};
+                            3'b010: write_data <= {2{R02[7:0], R02[15:8]}};
+                            3'b011: write_data <= {2{R03[7:0], R03[15:8]}};
+                            3'b100: write_data <= {2{SP[7:0], SP[15:8]}};
+                            3'b111: write_data <= {2{FR[7:0], FR[15:8]}};
                             default: begin
                             end
                         endcase
@@ -727,7 +728,7 @@ if (
             6'b101001: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
                         PC <= PC + 16'd2;
                     end
 
@@ -738,8 +739,8 @@ if (
                     end
 
                     CPU_STATE_INSTR_SECOND_IMM_FETCH: begin
-                        if (SP[1]) cur_imm <= data[31:16];
-                        else cur_imm <= data[15:0];
+                        if (SP[1]) cur_imm <= {data[23:16], data[31:24]};
+                        else cur_imm <= {data[7:0], data[15:8]};
                         SP <= SP + 16'd2;
                     end
 
@@ -768,7 +769,7 @@ if (
             6'b010010: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        cur_imm <= cur_instruction[21:6];
+                        cur_imm <= {cur_instruction[9:8], cur_instruction[21:16], cur_instruction[1:0], cur_instruction[15:10]};
                         SP <= SP - 16'd2;
                     end
 
@@ -777,7 +778,7 @@ if (
                         else byte_enable <= 4'b0011;
                         address <= {SP[15:2], 2'b00};
                         write_req <= 1;
-                        write_data <= {2{PC}};
+                        write_data <= {2{PC[7:0], PC[15:8]}};
                     end
 
                     CPU_STATE_INSTR_SECOND_IMM_FETCH: begin
@@ -793,7 +794,7 @@ if (
             6'b010011: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        case (cur_instruction[8:6])
+                        case ({cur_instruction[1:0], cur_instruction[15]})
                             3'b000: cur_imm <= R00;
                             3'b001: cur_imm <= R01;
                             3'b010: cur_imm <= R02;
@@ -810,7 +811,7 @@ if (
                         else byte_enable <= 4'b0011;
                         address <= {SP[15:2], 2'b00};
                         write_req <= 1;
-                        write_data <= {2{PC}};
+                        write_data <= {2{PC[7:0], PC[15:8]}};
                     end
 
                     CPU_STATE_INSTR_SECOND_IMM_FETCH: begin
@@ -833,8 +834,8 @@ if (
                     end
 
                     CPU_STATE_INSTR_IMM_FETCH_1: begin
-                        if (SP[1]) cur_imm <= data[15:0];
-                        else cur_imm <= data[31:16];
+                        if (SP[1]) cur_imm <= {data[7:0], data[15:8]};
+                        else cur_imm <= {data[23:16], data[31:24]};
                     end
 
                     CPU_STATE_INSTR_SECOND_IMM_FETCH: begin
@@ -847,11 +848,11 @@ if (
             end
             
             // CMP %REG1, %REG2
-            8'b010101: begin
+            6'b010101: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
                         PC <= PC + 16'd2;
                     end
 
@@ -909,9 +910,9 @@ if (
             6'b010110: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        cur_imm <= cur_instruction[31:16];
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
+                        cur_imm <= {cur_instruction[23:16], cur_instruction[31:24]};
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
                         PC <= PC + 16'd4;
                     end
 
@@ -959,8 +960,8 @@ if (
             6'b010111: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
                         PC <= PC + 16'd2;
                     end
 
@@ -1019,10 +1020,10 @@ if (
             6'b010111: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        cur_imm <= cur_instruction[31:16];
-                        instr_reg_1 <= cur_instruction[8:6];
-                        instr_reg_2 <= cur_instruction[11:9];
-                        PC <= PC + 16'd2;
+                        cur_imm <= {cur_instruction[23:16], cur_instruction[31:24]};
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        instr_reg_2 <= cur_instruction[14:12];
+                        PC <= PC + 16'd4;
                     end
 
                     CPU_STATE_INSTR_SECOND_IMM_FETCH: begin
@@ -1072,8 +1073,8 @@ if (
             6'b100000: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_OPERAND_FETCH: begin
-                        instr_reg_1 <= cur_instruction[8:6];
-                        cur_imm <= cur_instruction[31:16];
+                        instr_reg_1 <= {cur_instruction[1:0], cur_instruction[15]};
+                        cur_imm <= {cur_instruction[23:16], cur_instruction[31:24]};
                         if (cur_instruction[31:16] == 0) uart_read_req <= 1;
                         PC <= PC + 16'd4;
                     end
@@ -1098,7 +1099,7 @@ if (
             6'b100001: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        if (cur_instruction[21:6] == 0) begin
+                        if ({cur_instruction[21:8], cur_instruction[1:0]} == 0) begin
                             uart_write_req <= 1;
                             uart_wdata <= cur_instruction[29:22];
                         end
@@ -1114,7 +1115,7 @@ if (
             6'b100010: begin
                 case (cur_cpu_state)
                     CPU_STATE_INSTR_IMM_FETCH: begin
-                        if (cur_instruction[21:6] == 0) begin
+                        if ({cur_instruction[21:8], cur_instruction[1:0]} == 0) begin
                             uart_write_req <= 1;
                             case (cur_instruction[24:22])
                                 3'b000: uart_wdata <= R00[7:0];
